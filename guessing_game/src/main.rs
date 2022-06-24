@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Read};
 use rand::Rng;
 // use std::cmp::Ordering;
 
@@ -52,112 +52,130 @@ use rand::Rng;
 // rolling doubles => {roll_score * 2}
 // rolling snake eyes => {total score * 0}
 fn main() {
-    
+
+    // is it player ones turn? if so then we start the player 1 loop
+    let mut player_one_turn: u32 = 1;
+
     // set variable for target score
     let target: u32 = 69;
 
     // set variable for total score
-    let mut total: u32 = 0;
+    let mut player_one_total: u32 = 0;
+    let mut player_two_total: u32 = 0;
 
     // set variable to store score for current round
     let mut round_score: u32 = 0;
-    
-    // start game loop
-    loop {
 
-    
-    
+    // loop game logic for player one
+    while player_one_turn == 1 {
 
-    
+        // start game loop
+        loop {
 
-    // if a 1 is rolled, no points are awarded
-    // does this need a variable?
-    let one: u32 = 1;   
+        // if a 1 is rolled, no points are awarded
+        // does this need a variable?
+        let one: u32 = 1;   
 
-    // prompt user to roll
-    println!("enter any number to roll");
-    
-
-    // take input as roll_1
-    let mut roll_1 = String::new();
-    
-    // take user input
-    io::stdin()
-        .read_line(&mut roll_1)
-        .expect("failed to read");
-
-    // change input to u32
-    let roll_1: u32 = match roll_1.trim().parse() {
-        Ok(num) => num,
-        Err(_) => continue,
-    };
-
-    // declare value of roll 1 by multiplying by 0 then doing actual roll
-    let die_1_val: u32 = roll_1 * 0 + rand::thread_rng().gen_range(1..7);
-
-    // print result
-    println!("you rolled: {}", die_1_val);
-
-    // check to see if roll = 1 (round over)
-    if die_1_val == one {
-        println!("no points for this round");
-        println!("ur total is {}", total);
-        break;
-    }
-
-    // roll 2
-    println!("enter any number to roll again");
-
-
-    // input = roll die 2
-    let mut roll_2 = String::new();
-
-    // take user input
-    io::stdin()
-        .read_line(&mut roll_2)
-        .expect("failed to read");
-
-    // change input to u32
-    let roll_2: u32 = match roll_2.trim().parse() {
-        Ok(num) => num,
-        Err(_) => continue,
-    };
-
-    // die val 2 = multiply input by 0 then add 1-6
-    let die_2_val: u32 = roll_2 * 0 +rand::thread_rng().gen_range(1..7);
-
-    // print result
-    println!("you rolled: {}", die_2_val);
-
-    // assign roll score to sum of dice values
-    let roll_score:u32 = die_1_val + die_2_val;
-
-    // check to see if roll = 1 (round over)
-    if die_2_val == one {
-        println!("no points for you");
-        println!("ur total: {}", total);
-        break;
-    } else {
-        round_score+=roll_score;
-    }
-
-    // print round score
-    println!("your score for this round is {}", round_score);
-
-    // if y continue loop, 
-    // if n add round_score to total
-    println!("keep rolling? enter 0 to continue, enter 1 to end round");
-
-    io::stdin()
-        .read_line(&mut keep_rolling)
-        .expect("failed to read line");
-
-    if keep_rolling == n {
+        // prompt user to roll
+        println!("enter any number to roll");
         
-        println!("total score: {}", total);
-        total+=round_score;
+        // take input as roll_1
+        let mut roll_1 = String::new();
+        
+        // take user input
+        io::stdin()
+            .read_line(&mut roll_1)
+            .expect("failed to read");
+
+        // change input to u32
+        let roll_1: u32 = match roll_1.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+
+        // declare value of roll 1 by multiplying by 0 then doing actual roll
+        let die_1_val: u32 = roll_1 * 0 + rand::thread_rng().gen_range(1..7);
+
+        // print result
+        println!("you rolled: {}", die_1_val);
+
+        // check to see if roll = 1 (round over)
+        if die_1_val == one {
+            println!("no points for this round");
+            println!("ur total is {}", player_one_total);
+            break;
+        }
+
+        // roll 2
+        println!("enter any number to roll again");
+
+
+        // input = roll die 2
+        let mut roll_2 = String::new();
+
+        // take user input
+        io::stdin()
+            .read_line(&mut roll_2)
+            .expect("failed to read");
+
+        // change input to u32
+        let roll_2: u32 = match roll_2.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+
+        // die val 2 = multiply input by 0 then add 1-6
+        let die_2_val: u32 = roll_2 * 0 +rand::thread_rng().gen_range(1..7);
+
+        // print result
+        println!("you rolled: {}", die_2_val);
+
+        // assign roll score to sum of dice values
+        let roll_score:u32 = die_1_val + die_2_val;
+
+        // check to see if roll = 1 (round over)
+        if die_2_val == one {
+            println!("no points for you");
+            println!("ur total: {}", player_one_total);
+            player_one_turn = 0;
+        } else {
+            round_score+=roll_score;
+        }
+
+        // print round score
+        println!("your score for this round is {}", round_score);
+
+        // ask player if they want to keep going
+        println!("player one, would you like to continue? [0,1] 0 = no, 1 = yes");
+
+        // set variable to record answer
+        let mut answer: String = String::new();
+
+        io::stdin()
+            .read_line(&mut answer)
+            .expect("failed to read");
+
+        let answer: u32 = match answer.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+
+
+        
+
+        if answer < 1 {
+            println!("your total score is {}", player_one_total);
+            player_one_turn = 0;
+            println!("{}", player_one_turn);
+        }
+        
+
+
     }
-}
-    
+
+    // player one turn closing bracket
+    }
+
+// fn main closing bracket
 }
 
