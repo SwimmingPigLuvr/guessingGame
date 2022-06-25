@@ -104,7 +104,6 @@ fn main() {
             println!("P1: no points for this round");
             println!("P1: total: {}", player_one_total);
             player_one_turn = 0;
-            break;
         }
 
         // roll 2
@@ -167,7 +166,7 @@ fn main() {
         if answer < 1 {
             player_one_total+=round_score;
             println!("your total score is {}", player_one_total);
-            
+
             player_one_turn = 0;
         }
         
