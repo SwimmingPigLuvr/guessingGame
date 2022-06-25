@@ -77,7 +77,7 @@ fn main() {
         let one: u32 = 1;   
 
         // prompt user to roll
-        println!("enter any number to roll");
+        println!("P1: enter number to roll");
         
         // take input as roll_1
         let mut roll_1 = String::new();
@@ -97,17 +97,18 @@ fn main() {
         let die_1_val: u32 = roll_1 * 0 + rand::thread_rng().gen_range(1..7);
 
         // print result
-        println!("you rolled: {}", die_1_val);
+        println!("P1: you rolled a {}.", die_1_val);
 
         // check to see if roll = 1 (round over)
         if die_1_val == one {
-            println!("no points for this round");
-            println!("ur total is {}", player_one_total);
+            println!("P1: no points for this round");
+            println!("P1: total: {}", player_one_total);
+            player_one_turn = 0;
             break;
         }
 
         // roll 2
-        println!("enter any number to roll again");
+        println!("P1: roll again.");
 
 
         // input = roll die 2
@@ -128,25 +129,25 @@ fn main() {
         let die_2_val: u32 = roll_2 * 0 +rand::thread_rng().gen_range(1..7);
 
         // print result
-        println!("you rolled: {}", die_2_val);
+        println!("P1: you rolled a {}.", die_2_val);
 
         // assign roll score to sum of dice values
         let roll_score:u32 = die_1_val + die_2_val;
 
         // check to see if roll = 1 (round over)
         if die_2_val == one {
-            println!("no points for you");
-            println!("ur total: {}", player_one_total);
+            println!("P1: no points for this round.");
+            println!("P1 total: {}.", player_one_total);
             player_one_turn = 0;
         } else {
             round_score+=roll_score;
         }
 
         // print round score
-        println!("your score for this round is {}", round_score);
+        println!("P1: current round score: {}, total score: {}.", round_score, player_one_total);
 
         // ask player if they want to keep going
-        println!("player one, would you like to continue? [0,1] 0 = no, 1 = yes");
+        println!("P1: continue? 0 = no, 1 = yes");
 
         // set variable to record answer
         let mut answer: String = String::new();
@@ -162,11 +163,11 @@ fn main() {
 
 
         
-
+        // if p1 wants to end round
         if answer < 1 {
+            player_one_total+=round_score;
             println!("your total score is {}", player_one_total);
             player_one_turn = 0;
-            println!("{}", player_one_turn);
         }
         
 
@@ -244,18 +245,18 @@ fn main() {
 
         // check to see if roll = 1 (round over)
         if die_2_val == one {
-            println!("no points for you");
-            println!("ur total: {}", player_two_total);
+            println!("P2: 0 points for this round");
+            println!("P2: total: {}", player_two_total);
             player_one_turn = 0;
         } else {
             round_score+=roll_score;
         }
 
         // print round score
-        println!("your score for this round is {}", round_score);
+        println!("P2: round score: {}", round_score);
 
         // ask player if they want to keep going
-        println!("player one, would you like to continue? [0,1] 0 = no, 1 = yes");
+        println!("P2: continue? 0 = no, 1 = yes");
 
         // set variable to record answer
         let mut answer: String = String::new();
@@ -273,7 +274,7 @@ fn main() {
         
 
         if answer < 1 {
-            println!("your total score is {}", player_two_total);
+            println!("P2: total: {}", player_two_total);
             player_one_turn = 0;
             println!("{}", player_one_turn);
         }
