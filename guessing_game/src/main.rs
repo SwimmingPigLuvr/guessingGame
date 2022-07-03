@@ -1,4 +1,6 @@
-use std::io::{self, Read};
+use std::io;
+use std::collections::HashMap;
+use std::vec;
 use rand::Rng;
 use rand::thread_rng;
 // use std::cmp::Ordering;
@@ -53,53 +55,40 @@ use rand::thread_rng;
 // rolling doubles => {roll_score * 2}
 // rolling snake eyes => {total score * 0}
 
-struct Player {
+
+
+struct Game {
     name: String,
-    their_turn: bool,
-    score: u64,
-    round_score: u64,
-    dice_total: u64,
+    score: u32,
+    turn: bool,
+    turn_score: u32,
+    roll_score: u32,
 }
 
-impl Player {
-    fn dice_roll(&self) -> u64 {
-        // let mut rng = thread_rng();
-        // let roll1: u64 = rng.gen_range(1..7);
-        // let roll2: u64 = rng.gen_range(1..7);
-        // println!("first die shows {}", roll1);
-        // println!("second die shows {}", roll2);
-    }
-    
-}
+impl Game {
+    fn new_players(&self) {
+        let mut player1: Game = Game { 
+            name: String::new(), 
+            score: 0, 
+            turn: true, 
+            turn_score: 0, 
+            roll_score: 0
+        };
+        let mut player2: Game = Game { 
+            name: String::new(), 
+            score: 0, 
+            turn: false, 
+            turn_score: 0, 
+            roll_score: 0 
+        };
+        let mut player3: Game = Game { 
+            name: String::new(), 
+            score: 0, 
+            turn: false, 
+            turn_score: 0, 
+            roll_score: 0 
+        };
 
-
-fn main() {
-    
-    let mut player1: Player = Player { 
-        name: String::new(), 
-        their_turn: true, 
-        score: 0, 
-        round_score: 0,
-        dice_total: 0
-    };
-    
-    let mut player2: Player = Player { 
-        name: String::new(), 
-        their_turn: false, 
-        score: 0, 
-        round_score: 0,
-        dice_total: 0
-    };
-    
-    let mut player3: Player = Player { 
-        name: String::new(), 
-        their_turn: true, 
-        score: 0, 
-        round_score: 0,
-        dice_total: 0
-    };
-    
-    
     // player 1 name input
     println!("Player 1, enter your name");
     io::stdin()
@@ -118,19 +107,50 @@ fn main() {
         .read_line(&mut player3.name)
         .expect("illiterate");
 
-    println!("Player 1: {}", player1.name);
-    println!("Player 2: {}", player2.name);
-    println!("Player 3: {}", player3.name);
+    print!("Player 1: {}", player1.name);
+    print!("Player 2: {}", player2.name);
+    print!("Player 3: {}", player3.name);
+        
+    }
+
+    fn dice_roll(&self) {
+
+        let mut rng = thread_rng();
+        let roll1: u64 = rng.gen_range(1..7);
+        let roll2: u64 = rng.gen_range(1..7);
+
+        println!("first die shows {}", roll1);
+        println!("second die shows {}", roll2);
+    }
+
+    fn turn(&self) {
+
+    
+    loop {
+        println!("{} roll", player1.name);
+        Game::dice_roll(&player1);
+        println!("keep rolling? [y/n]");
+
+        println!("{} roll", player2.name);
+        Game::dice_roll(&player2);
+        println!("keep rolling? [y/n]");
+
+        println!("{} roll", player3.name);
+        Game::dice_roll(&player3);
+        println!("keep rolling? [y/n]");
+    }
+}
+
+    
+}
+
+
+
+fn main() {
+    
     
 
 }
 
-fn build_player(name: String) -> Player {
-        Player {
-            name: String::new(),
-            their_turn: false,
-            score: 0,
-            round_score: 0,
-            dice_total: 0,
-        }
-    }
+
+
