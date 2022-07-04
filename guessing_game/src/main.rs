@@ -1,6 +1,6 @@
 use std::io;
-use std::collections::HashMap;
-use std::vec;
+// use std::collections::HashMap;
+// use std::vec;
 use rand::Rng;
 use rand::thread_rng;
 // use std::cmp::Ordering;
@@ -66,7 +66,9 @@ struct Game {
 }
 
 impl Game {
-    fn new_players(&self) {
+
+    // take name values
+    fn new_players(self) {
         let mut player1: Game = Game { 
             name: String::new(), 
             score: 0, 
@@ -83,36 +85,34 @@ impl Game {
         };
         let mut player3: Game = Game { 
             name: String::new(), 
-            score: 0, 
-            turn: false, 
-            turn_score: 0, 
-            roll_score: 0 
+            ..player2
         };
 
-    // player 1 name input
+    //name input
     println!("Player 1, enter your name");
     io::stdin()
         .read_line(&mut player1.name)
         .expect("cant read");
 
-    // player 2 name input
     println!("Player 2, enter your name");
     io::stdin()
         .read_line(&mut player2.name)
         .expect("illiterate");
 
-    // player 3 name input
     println!("Player 3, enter your name");
     io::stdin()
         .read_line(&mut player3.name)
         .expect("illiterate");
 
-    print!("Player 1: {}", player1.name);
-    print!("Player 2: {}", player2.name);
-    print!("Player 3: {}", player3.name);
+    print!("Player 1: {}", player1.name.to_uppercase());
+    print!("Player 2: {}", player2.name.to_uppercase());
+    print!("Player 3: {}", player3.name.to_uppercase());
         
     }
 
+
+
+    // ROLL DICE
     fn dice_roll(&self) {
 
         let mut rng = thread_rng();
@@ -123,23 +123,6 @@ impl Game {
         println!("second die shows {}", roll2);
     }
 
-    fn turn(&self) {
-
-    
-    loop {
-        println!("{} roll", player1.name);
-        Game::dice_roll(&player1);
-        println!("keep rolling? [y/n]");
-
-        println!("{} roll", player2.name);
-        Game::dice_roll(&player2);
-        println!("keep rolling? [y/n]");
-
-        println!("{} roll", player3.name);
-        Game::dice_roll(&player3);
-        println!("keep rolling? [y/n]");
-    }
-}
 
     
 }
@@ -152,5 +135,19 @@ fn main() {
 
 }
 
+fn turn() {
 
+    println!("{} roll", player1.name);
+    Game::dice_roll(player1);
+    println!("keep rolling? [y/n]");
+
+    println!("{} roll", player2.name);
+    Game::dice_roll(&player2);
+    println!("keep rolling? [y/n]");
+
+    println!("{} roll", player3.name);
+    Game::dice_roll(&player3);
+    println!("keep rolling? [y/n]");
+    
+}
 
