@@ -1,153 +1,125 @@
 use std::io;
-// use std::collections::HashMap;
-// use std::vec;
-use rand::Rng;
 use rand::thread_rng;
-// use std::cmp::Ordering;
-
-// GREED 
-// 
-// rules:
-// player rolls 2 dice,
-
-// the total of both dice are added to the players score FOR THAT ROUND
-// player can keep rolling BUT IF A 1 IS ROLLED
-
-//  THAT ROUND DOES NOT GET ADDED TO THEIR TOTAL SCORE
-
-//first player to reach total of 100 is the winner
-
-// doubles will be doubled (i.e. 6+6 => 12+12)
-
-// snake eyes will set your total score to 0
+use rand::Rng;
 
 
-
-
-// how many players?
-// 1
-// player 1, press enter to roll...press enter to roll again
-// RR
-// you rolled 4 + 5, round score: 9, continue? [y, n]
-// n
-// your total score is 9
-// player 2, press enter to roll...press enter to roll again
-// RR
-// you rolled 6 + 6, round score: 24, continue? [y, n]
-// y
-// player 2, press enter to roll...press enter to roll again
-// you rolled 1 + 3, round score 0, round over
-
-
-// SNAKE EYES!
-// get fucked
-
-// variables:
-// players(for later)
-
-// total score
-// round score
-// roll score(2dice)
-// target score
-// roll 1
-// roll 2
-// rolling a one => {round score = 0}
-// rolling doubles => {roll_score * 2}
-// rolling snake eyes => {total score * 0}
-
-
-
-struct Game {
+pub struct Player {
     name: String,
-    score: u32,
-    turn: bool,
+    turn: u32,
+    total_score: u32,
     turn_score: u32,
     roll_score: u32,
 }
 
+fn dice_roll() -> (u32, u32, u32) {
+    // dice simulation
+    let mut rng = thread_rng();
+    let roll1: u32 = rng.gen_range(1..7);
+    let roll2: u32 = rng.gen_range(1..7);
+    let mut roll_score = roll1 + roll2;
+
+    // check rules
+    if roll1 == 1 {
+        roll_score *= 0;
+        break;
+    }
+
+    if roll2 == 1 {
+        roll_score *= 0
+    }
+    
+    if roll1 == roll2 {
+        roll_score *= 2
+    }
+
+    println!("rolled {} & {}", roll1, roll2);
+    println!("score: {}", roll_score);
+    
+    // return
+    (roll1, roll2, roll_score)
+}
+
+// impl Game {
+//     // ROLL DICE
+//     fn dice_roll(&self) {
+//         let mut rng = thread_rng();
+//         let roll1: u64 = rng.gen_range(1..7);
+//         let roll2: u64 = rng.gen_range(1..7);
+
+//         println!("first die shows {}", roll1);
+//         println!("second die shows {}", roll2);
+//     }
+
+//     fn turn(&self) {}
+// }
+
+pub struct Game {
+    players: Vec<String>,
+    turn: u8,
+    totals: (u8, u8, u8),
+}
+
 impl Game {
-
-    // take name values
-    fn new_players(self) {
-        let mut player1: Game = Game { 
-            name: String::new(), 
-            score: 0, 
-            turn: true, 
-            turn_score: 0, 
-            roll_score: 0
-        };
-        let mut player2: Game = Game { 
-            name: String::new(), 
-            score: 0, 
-            turn: false, 
-            turn_score: 0, 
-            roll_score: 0 
-        };
-        let mut player3: Game = Game { 
-            name: String::new(), 
-            ..player2
-        };
-
-    //name input
-    println!("Player 1, enter your name");
-    io::stdin()
-        .read_line(&mut player1.name)
-        .expect("cant read");
-
-    println!("Player 2, enter your name");
-    io::stdin()
-        .read_line(&mut player2.name)
-        .expect("illiterate");
-
-    println!("Player 3, enter your name");
-    io::stdin()
-        .read_line(&mut player3.name)
-        .expect("illiterate");
-
-    print!("Player 1: {}", player1.name.to_uppercase());
-    print!("Player 2: {}", player2.name.to_uppercase());
-    print!("Player 3: {}", player3.name.to_uppercase());
+    pub fn start(&mut self) {
         
     }
-
-
-
-    // ROLL DICE
-    fn dice_roll(&self) {
-
-        let mut rng = thread_rng();
-        let roll1: u64 = rng.gen_range(1..7);
-        let roll2: u64 = rng.gen_range(1..7);
-
-        println!("first die shows {}", roll1);
-        println!("second die shows {}", roll2);
-    }
-
-
     
 }
+
+// game functions
+
 
 
 
 fn main() {
+    println!("----LET'S PLAY GREED----");
+    
+    let mut player1: Player = Player {
+        name: String::new(),
+        turn: 1,
+        total_score: 0,
+        turn_score: 0,
+        roll_score: 0
+    };
+    let mut player2: Player = Player {
+        name: String::new(),
+        turn: 2,
+        total_score: 0,
+        turn_score: 0,
+        roll_score: 0
+    };
+    let mut player3: Player = Player {
+        name: String::new(),
+        turn: 3,
+        total_score: 0,
+        turn_score: 0,
+        roll_score: 0
+    };
+
+    println!("Players, state your names:");
+    println!("Player 1:");
+    io::stdin()
+        .read_line(&mut player1.name)
+        .expect("wtf was that");
+    println!("Player 2:");
+    io::stdin()
+        .read_line(&mut player2.name)
+        .expect("wtf was that");
+    println!("Player 3:");
+    io::stdin()
+        .read_line(&mut player3.name)
+        .expect("wtf was that");
+    
+    
+    
+    dice_roll();
+    
+    
+    println!("roll again? [y,n]");
+    let mut response: String = String::new();
+    io::stdin().read_line(&mut response).expect("can't read");
     
     
 
-}
-
-fn turn() {
-
-    println!("{} roll", player1.name);
-    Game::dice_roll(player1);
-    println!("keep rolling? [y/n]");
-
-    println!("{} roll", player2.name);
-    Game::dice_roll(&player2);
-    println!("keep rolling? [y/n]");
-
-    println!("{} roll", player3.name);
-    Game::dice_roll(&player3);
-    println!("keep rolling? [y/n]");
-    
 }
 
