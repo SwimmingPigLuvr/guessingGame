@@ -1,6 +1,7 @@
 use std::io;
 use rand::thread_rng;
 use rand::Rng;
+use yansi::{Paint, Color, Style};
 
 // TO DO
 
@@ -37,6 +38,30 @@ use rand::Rng;
 //     roll: u32
 // }
 fn main() {
+    // terminal styles
+    let p = Style::new(Color::Blue).bold();
+    let n = Style::new(Color::Black).bold();
+    let fg = Style::default().fg(Color::Cyan);
+    let bg = Style::default().bg(Color::Cyan);
+    print!("{}", p.paint("GREED"));
+    print!("{}", n.paint("GREED"));
+    println!("{}", fg.paint("FOREGROUND"));
+    println!("{}", bg.paint("LETS PLAY GREED"));
+
+    // rules
+    println!("2 players take turns rolling dice, racing to get a score of 100,");
+    println!("each player may roll as many times as they want during their turn");
+    println!("however, if a 1 is rolled then that player gets no points for the entire turn,");
+    println!("if a player rolls Snake Eyes, then their total score goes to 0");
+    println!("if doubles are rolled, then those dice are doubled.");
+    println!("e.g: rolling 2 6's would score you 24 points");
+    println!("if player 1 rolls to 100 first, player 2 has 1 last chance to beat them");
+    println!("that way each player has an equal number of turns");
+    println!("if player 1 reaches 100 or higher, they may keep rolling to set a higher total");
+    println!("so if player 1 decides to stop at a score of 121,");
+    println!("player 2 would have to get to 121 or higher to win");
+
+
     fn dice_roll() -> i32 {
         // dice simulation
         let mut rng = thread_rng();
@@ -73,7 +98,7 @@ fn main() {
         }
         
         'turn1: loop {
-            println!("Player1, type 'roll' to roll");
+            println!("{}, type '{}' to roll", Paint::red("player 1").bold(), Paint::yellow("roll").bg(Color::Fixed(60)));
             let roll1 = dice_roll();
             let roll2: i32 = dice_roll();
             let mut virtual_dice_roll = String::new();
