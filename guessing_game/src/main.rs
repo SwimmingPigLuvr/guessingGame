@@ -37,10 +37,10 @@ use rand::Rng;
 //     roll: u32
 // }
 fn main() {
-    fn dice_roll() -> u32 {
+    fn dice_roll() -> i32 {
         // dice simulation
         let mut rng = thread_rng();
-        let roll: u32 = rng.gen_range(1..7);
+        let roll: i32 = rng.gen_range(1..7);
         roll
     }
 // fn check_response(&response) -> u8 {
@@ -50,11 +50,9 @@ fn main() {
 //     }
 // }
         let mut p1_score = 0;
-        let mut p1_turn_score = 0;
         // let mut p1_turn_count: i32= 0;
 
         let mut p2_score = 0;
-        let mut p2_turn_score = 0;
         // let mut p2_turn_count: i32 = 0;
         
         // let mut p3_score = 0;
@@ -62,11 +60,22 @@ fn main() {
         // let mut p3_turn_count: i32 = 0;
 
     'game: loop {
+        let mut p1_turn_score = 0;
+        let mut p2_turn_score = 0;
+
+        if p1_score >= 100 {
+        println!("Player 1 wins");
+        }
+
+        if p2_score < p1_score && p1_score >= 100 {
+            println!("p1 wins");
+            break 'game;
+        }
         
         'turn1: loop {
             println!("Player1, type 'roll' to roll");
             let roll1 = dice_roll();
-            let roll2: u32 = dice_roll();
+            let roll2: i32 = dice_roll();
             let mut virtual_dice_roll = String::new();
             io::stdin()
                 .read_line(&mut virtual_dice_roll)
@@ -76,10 +85,12 @@ fn main() {
             if roll1 == 1 && roll2 == 1 {
                 p1_score *= 0;
                 println!("snake eyes! your score is now {}", p1_score);
+                // p1_turn_count += 1;
                 break 'turn1;
             } else if roll1 ==1 || roll2 == 1 {
                 println!("0 points for this turn!");
                 println!("{} is your total score", p1_score);
+                // p1_turn_count += 1;
                 break 'turn1;
             } else if roll1 == roll2 {
                 println!(" double {}'s! good job", roll1);
@@ -97,9 +108,11 @@ fn main() {
                 p1_score += p1_turn_score;
                 println!("p1 total score: {}", p1_score);
                 if p1_score >= 100 {
-                    println!("you win");
-                    break 'game;
+                    println!("YOU WIN!");
+                    println!("...but not so fast p2 gets one last chance");
+                    break 'turn1;
                 }
+                // p1_turn_count += 1;
                 break 'turn1;
             }
             }
@@ -116,8 +129,9 @@ fn main() {
                 p1_score += p1_turn_score;
                 println!("p1 total score: {}", p1_score);
                 if p1_score >= 100 {
-                    println!("you win");
-                    break 'game;
+                    println!("YOU WIN!");
+                    println!("...but not so fast p2 gets one last chance");
+                    break 'turn1;
                 }
                 break 'turn1;
             }
@@ -126,7 +140,7 @@ fn main() {
         'turn2: loop {
             println!("Player2, type 'roll' to roll");
             let roll1 = dice_roll();
-            let roll2: u32 = dice_roll();
+            let roll2: i32 = dice_roll();
 
             // check if roll is entered
             let mut virtual_dice_roll = String::new();
@@ -188,7 +202,7 @@ fn main() {
             } else {
                 p2_score += p2_turn_score;
                 println!("p2 total score: {}", p2_score);
-                if p2_score >= 100 {
+                if p2_score >= 100 && p2_score > p1_score {
                     println!("you win");
                     break 'game;
                 }
