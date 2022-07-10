@@ -1,7 +1,10 @@
 use std::io;
 use rand::thread_rng;
 use rand::Rng;
-use yansi::{Paint, Color, Style};
+use yansi::{Color, Style};
+use owo_colors::OwoColorize;
+// use device_query::{DeviceQuery, DeviceState, MouseState, Keycode};
+
 
 // TO DO
 
@@ -12,44 +15,44 @@ use yansi::{Paint, Color, Style};
 // create player struct 
 // game loop points to player struct values
 
-// FRONT END
-// research rust -> react
-// create assets in photoshop/illustrator/after effects
-
-// SOLANA
-// use anchor to bring game into solana
-// features:
-// connect w friends
-// set wager amount
-// 5% of winnings go back to community wallet
 
 
-// problem: adds turn score from previous turn to next turn
 
+// ✅problem: adds turn score from previous turn to next turn. solved by placing values in correct loop scope
+
+
+
+struct Player {
+    name: String,
+    score: i32,
+    turn_count: i32,
+}
 
 
 
 
-
-
-// pub struct Scores {
-//     total: u32,
-//     turn: u32,
-//     roll: u32
-// }
 fn main() {
     // terminal styles
     let p = Style::new(Color::Blue).bold();
     let n = Style::new(Color::Black).bold();
-    let fg = Style::default().fg(Color::Cyan);
+    let fg = Style::default().fg(Color::Fixed(155)).bold();
     let bg = Style::default().bg(Color::Cyan);
+    let blue = Style::default().fg(Color::Fixed(33)).bold();
+    let whitebg = Style::default().fg(Color::Black).bg(Color::White);
+    let yllw = Style::new(Color::Yellow).bold();
+    let test = Style::new(Color::Magenta);
+    let abyss= Style::new(Color::RGB(3, 55, 200));
+
+
+    // header
     print!("{}", p.paint("GREED"));
     print!("{}", n.paint("GREED"));
-    println!("{}", fg.paint("FOREGROUND"));
+    println!("{}", test.paint("GREED"));
     println!("{}", bg.paint("LETS PLAY GREED"));
 
     // rules
-    println!("2 players take turns rolling dice, racing to get a score of 100,");
+    println!("{}", fg.paint("**HOW TO PLAY**").blink_fast());
+    println!("2 players take turns rolling dice, racing to get a score of {},", whitebg.paint("100"));
     println!("each player may roll as many times as they want during their turn");
     println!("however, if a 1 is rolled then that player gets no points for the entire turn,");
     println!("if a player rolls Snake Eyes, then their total score goes to 0");
@@ -60,62 +63,114 @@ fn main() {
     println!("if player 1 reaches 100 or higher, they may keep rolling to set a higher total");
     println!("so if player 1 decides to stop at a score of 121,");
     println!("player 2 would have to get to 121 or higher to win");
+    println!("{}", bg.paint("TYPE 'roll' TO ROLL"));
 
+    println!("How many players will be playing?");
+    
+    fn set_player(name: String) -> Player {
+        Player { name, score: 0, turn_count: 0, }
+    }
 
+    // variable to take imput
+    let mut p_string = String::new();
+    io::stdin().read_line(&mut p_string).expect("cant read");
+    // trim p_string because the 'enter' button gets collected in read_line(&mut p_string)
+    let p_string = p_string.trim();
+    // parse().unwrap() is a method to parse from a String to i32
+    let p_num: i32 = p_string.parse().unwrap();
+    // create empty vec
+    let mut pvec: Vec<i32> = Vec::new();
+    // for loop inserts every value from 1 to pnum
+    for i in 1..=p_num {
+        pvec.push(i)
+    }
+    // now that i have a vec with desired number of players i have to 
+    // create a function that creates a player for every value in pvec
+    
+    // 
+    
+    // this worked ✅
+    for i in pvec {
+        println!("Player {i}, enter your name:");
+        let new_name = String::new();
+        let mut i: Player = set_player(new_name);
+        io::stdin().read_line(&mut i.name).expect("error");
+        println!("just to be sure... you want to be called {}?", i.name.trim())
+    }
+    
+    
+
+    // take in # of players and use fn set_player that many times
+
+    // fn name_player...
+    // this can encapsulate the entire process of asking player their name
+    //  and setting it to the correct Player.name value
+    // figure out how to make structs p1-px, where x = p_num
+    
+    
     fn dice_roll() -> i32 {
         // dice simulation
         let mut rng = thread_rng();
         let roll: i32 = rng.gen_range(1..7);
         roll
     }
-// fn check_response(&response) -> u8 {
-//     match response {
-//         String::from("y") => 1,
-//         String::from("n") => 0,
-//     }
-// }
-        let mut p1_score = 0;
-        // let mut p1_turn_count: i32= 0;
 
-        let mut p2_score = 0;
-        // let mut p2_turn_count: i32 = 0;
+    
+    
+    
+    
+
+
         
-        // let mut p3_score = 0;
-        // let mut p3_turn_score = 0;
-        // let mut p3_turn_count: i32 = 0;
+    println!("{}, {}", bg.paint("PLAYER 1").invert(),blue.paint("enter your name:"));
+    let mut p1 = set_player(String::new());
+    io::stdin()
+        .read_line(&mut p1.name)
+        .expect("error can't read");
+    println!("{}, {}", fg.paint("PLAYER 2").invert(), fg.paint("enter your name:"));
+    let mut p2 = set_player(String::new());
+    io::stdin()
+        .read_line(&mut p2.name)
+        .expect("error can't read");
 
     'game: loop {
         let mut p1_turn_score = 0;
         let mut p2_turn_score = 0;
 
-        if p1_score >= 100 {
+        if p1.score >= 100 {
         println!("Player 1 wins");
         }
 
-        if p2_score < p1_score && p1_score >= 100 {
+        if p2.score < p1.score && p1.score >= 100 {
             println!("p1 wins");
             break 'game;
         }
+
+
         
         'turn1: loop {
-            println!("{}, type '{}' to roll", Paint::red("player 1").bold(), Paint::yellow("roll").bg(Color::Fixed(60)));
+            println!("{}", "SCORE CHECK!!!".on_red());
+            println!("{} has {} points", p1.name.trim(), p1.score);
+            println!("{} has {} points", p2.name.trim(), p2.score);
+            println!("{}, {}", blue.paint(p1.name.to_ascii_uppercase().trim()), abyss.paint("it's your turn to roll"));
             let roll1 = dice_roll();
             let roll2: i32 = dice_roll();
+            
             let mut virtual_dice_roll = String::new();
             io::stdin()
                 .read_line(&mut virtual_dice_roll)
                 .expect("not sure what that was");
             if virtual_dice_roll.contains("roll") {
-            println!("p1 rolled: {} & {}", roll1, roll2);
+            println!("{} & {}", roll1.black().on_bright_white().blink_fast().bold(), roll2.black().on_white().blink().bold());
             if roll1 == 1 && roll2 == 1 {
-                p1_score *= 0;
-                println!("snake eyes! your score is now {}", p1_score);
-                // p1_turn_count += 1;
+                p1.score *= 0;
+                println!("snake eyes! your score is now {}", p1.score.on_red());
+                p1.turn_count += 1;
                 break 'turn1;
             } else if roll1 ==1 || roll2 == 1 {
                 println!("0 points for this turn!");
-                println!("{} is your total score", p1_score);
-                // p1_turn_count += 1;
+                println!("total score: {}", yllw.paint(p1.score));
+                p1.turn_count += 1;
                 break 'turn1;
             } else if roll1 == roll2 {
                 println!(" double {}'s! good job", roll1);
@@ -130,19 +185,20 @@ fn main() {
             if binary == true {
                 continue 'turn1;
             } else {
-                p1_score += p1_turn_score;
-                println!("p1 total score: {}", p1_score);
-                if p1_score >= 100 {
+                p1.score += p1_turn_score;
+                println!("p1 total score: {}", yllw.paint(p1.score));
+                if p1.score >= 100 {
                     println!("YOU WIN!");
                     println!("...but not so fast p2 gets one last chance");
+                    p1.turn_count += 1;
                     break 'turn1;
                 }
-                // p1_turn_count += 1;
+                p1.turn_count += 1;
                 break 'turn1;
             }
             }
             p1_turn_score += roll1 + roll2;
-            println!("p1 score for this turn: {} keep rolling? [y,n]", p1_turn_score);
+            println!("turn score: {} keep rolling? [y,n]", yllw.paint(p1_turn_score));
             let mut response = String::new();
             io::stdin()
                 .read_line(&mut response)
@@ -151,19 +207,21 @@ fn main() {
             if binary == true {
                 continue 'turn1;
             } else {
-                p1_score += p1_turn_score;
-                println!("p1 total score: {}", p1_score);
-                if p1_score >= 100 {
+                p1.score += p1_turn_score;
+                println!("p1 total score: {}", yllw.paint(p1.score));
+                if p1.score >= 100 {
                     println!("YOU WIN!");
                     println!("...but not so fast p2 gets one last chance");
+                    p1.turn_count += 1;
                     break 'turn1;
                 }
+                p1.turn_count += 1;
                 break 'turn1;
             }
         }
     }
         'turn2: loop {
-            println!("Player2, type 'roll' to roll");
+            println!("{}, type 'roll' to roll", p2.name.trim());
             let roll1 = dice_roll();
             let roll2: i32 = dice_roll();
 
@@ -173,18 +231,20 @@ fn main() {
                 .read_line(&mut virtual_dice_roll)
                 .expect("not sure what that was");
             if virtual_dice_roll.contains("roll") {
-            println!("p2 rolled: {} & {}", roll1, roll2);
+            println!("{} rolled: {} & {}", p2.name.trim(), roll1, roll2);
 
             // compare dice values to special cases
             // snake eyes
             if roll1 == 1 && roll2 == 1 {
-                p2_score *= 0;
-                println!("snake eyes! your total score is now {}", p2_score);
+                p2.score *= 0;
+                println!("snake eyes! your total score is now {}", p2.score);
+                p2.turn_count += 1;
                 break 'turn2;
             // roll a 1
             } else if roll1 ==1 || roll2 == 1 {
                 println!("0 points for this turn!");
-                println!("{} is your total score", p2_score);
+                println!("{} is your total score", p2.score);
+                p2.turn_count += 1;
                 break 'turn2;
             // roll doubles
             } else if roll1 == roll2 {
@@ -205,10 +265,10 @@ fn main() {
                 continue 'turn2;
             // if no, add turn score to total and end turn
             } else {
-                p2_score += p2_turn_score;
-                println!("p2 total score: {}", p2_score);
+                p2.score += p2_turn_score;
+                println!("p2 total score: {}", p2.score);
                 // if they are at 100 they win
-                if p2_score >= 100 {
+                if p2.score >= 100 {
                     println!("you win");
                     break 'game;
                 }
@@ -225,12 +285,13 @@ fn main() {
             if binary == true {
                 continue 'turn2;
             } else {
-                p2_score += p2_turn_score;
-                println!("p2 total score: {}", p2_score);
-                if p2_score >= 100 && p2_score > p1_score {
+                p2.score += p2_turn_score;
+                println!("p2 total score: {}", p2.score);
+                if p2.score >= 100 && p2.score > p1.score {
                     println!("you win");
                     break 'game;
                 }
+                p2.turn_count += 1;
                 break 'turn2;
             }
         }
