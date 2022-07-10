@@ -64,6 +64,17 @@ fn main() {
         roll
     }   
 
+    'game: loop {
+        
+        // turn scores stored here
+        // create vec for turn scores
+
+        // iterate through pvec 
+        // 'turn loop for each iteration of pvec
+        
+
+    }
+
 
     
 // **GAME LOOP PAUSED FOR CONSTRUCTION***
