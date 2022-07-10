@@ -36,6 +36,8 @@ fn main() {
 
     println!("How many players will be playing?");
     
+    
+    
     fn set_player(name: String) -> Player {
         Player { name, score: 0, turn_count: 0, }
     }
@@ -44,17 +46,24 @@ fn main() {
     io::stdin().read_line(&mut p_string).expect("cant read");
     let p_string = p_string.trim();
     let p_num: i32 = p_string.parse().unwrap();
-    let mut pvec: Vec<i32> = Vec::new();
-    for i in 1..=p_num {
-        pvec.push(i)
+    let mut pvec: Vec<Player> = Vec::new();
+
+    let mut i = 1;
+    loop {
+        println!("PLAYER {i}, ENTER YOUR NAME");
+        let mut new_name = String::new();  
+        io::stdin().read_line(&mut new_name).expect("cant read");
+        let player: Player = set_player(new_name);
+        pvec.push(player);
+        println!("{}", pvec[i-1].name);
+
+        if i >= p_num.try_into().unwrap() {
+            break;
+        }
+        i += 1;
+        
     }
-    // this worked ✅
-    for i in pvec {
-        println!("Player {i}, enter your name:");
-        let new_name = String::new();
-        let mut i: Player = set_player(new_name);
-        io::stdin().read_line(&mut i.name).expect("error");
-    }
+    
     
     
     fn dice_roll() -> i32 {
@@ -65,6 +74,19 @@ fn main() {
     }   
 
     'game: loop {
+
+        // REMEMBER! vec indexes start from 0
+        // so the indexes are ***turn_scores[0] to turn_scores[p_num-1]***
+        // ex: player 5's turn score is stored at turn_score[4]
+        let turn_scores: Vec<i32> = vec![0; p_num.try_into().unwrap()];
+        let mut i: usize = 1;
+        loop {
+            println!("{}'s turn score is {}", pvec[i-1].name, turn_scores[i-1]);
+            if i >= p_num.try_into().unwrap() {
+                break;
+            }
+            i += 1;
+        }
         
         // turn scores stored here
         // create vec for turn scores
