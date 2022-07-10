@@ -1,4 +1,5 @@
 use std::io;
+use rand::prelude::ThreadRng;
 use rand::thread_rng;
 use rand::Rng;
 use owo_colors::OwoColorize;
@@ -55,7 +56,6 @@ fn main() {
         io::stdin().read_line(&mut new_name).expect("cant read");
         let player: Player = set_player(new_name);
         pvec.push(player);
-        println!("{}", pvec[i-1].name);
 
         if i >= p_num.try_into().unwrap() {
             break;
@@ -73,17 +73,40 @@ fn main() {
         roll
     }   
 
+    let mut random_prompts: Vec<String> = Vec::new();
+    random_prompts.push(String::from("HURRY UP AND ROLL"));
+    random_prompts.push(String::from("ROLL THEM SHITS, BITCH"));
+    random_prompts.push(String::from("ROLL THE DICE!!!"));
+    random_prompts.push(String::from("YOUR TURN"));
+    random_prompts.push(String::from("*picks up dice...shakes vigorously...rolls them across the table"));
+    random_prompts.push(String::from("GOOD LUCK, HAVE FUN :)"));
+    random_prompts.push(String::from("whatever you do, DON'T ROLL SNAKE EYES"));
+
+    fn gen_prompt_num() -> i32 {
+        let mut prompt: ThreadRng = thread_rng();
+        let prompt_num: i32 = prompt.gen_range(1..8);
+        prompt_num
+    }
     'game: loop {
 
         // REMEMBER! vec indexes start from 0
         // so the indexes are ***turn_scores[0] to turn_scores[p_num-1]***
-        // ex: player 5's turn score is stored at turn_score[4]
+        // ex: player i's turn score is stored at turn_score[i-1]
         let turn_scores: Vec<i32> = vec![0; p_num.try_into().unwrap()];
         let mut i: usize = 1;
         loop {
-            println!("{}'s turn score is {}", pvec[i-1].name, turn_scores[i-1]);
+            let mut rp_index: i32 = gen_prompt_num();
+            println!("{}: {}", pvec[i-1].name.trim(), random_prompts[5]);
+            let roll1 = dice_roll();
+            let roll2 = dice_roll();
+            let mut keyboard_roll = String::new();
+            io::stdin().read_line(&mut keyboard_roll).expect("cant read that");
+            if keyboard_roll.contains("roll") {
+                println!("{} & {}", roll1, roll2);
+            }
+            
             if i >= p_num.try_into().unwrap() {
-                break;
+                break 'game;
             }
             i += 1;
         }
