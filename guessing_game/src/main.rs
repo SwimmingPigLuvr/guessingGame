@@ -10,7 +10,7 @@ use owo_colors::OwoColorize;
 // call function for each player
 // turn_count will be useful so that each player gets equal turns
 // e.g. 
-
+#[derive(Debug, Clone)]
 struct Player {
     name: String,
     score: i32,
@@ -113,6 +113,15 @@ fn main() {
         ro_num
     }
 
+
+    // Using Closures that Capture Their Environment
+    // https://doc.rust-lang.org/book/ch13-02-iterators.html
+
+    // this function creates a vec of Players who have a certain turn_count left
+    fn last_turns (players: Vec<Player>, turn_count: i32) -> Vec<Player> {
+        players.into_iter().filter(|p| p.turn_count == turn_count).collect()
+    }
+
     // since i only have 1 turn loop inside the game loop
     // i have to make sure that the i value changes after a player's turn ends
     let mut i: usize = 0;
@@ -134,7 +143,7 @@ fn main() {
 
                 // rolling snake eyes
                 if roll1 == 1 && roll2 == 1 {
-                    println!("SNAKE EYES");
+                    println!("{}", ("SNAKE EYES").on_bright_magenta());
                     pvec[i].score *= 0;
                     println!("{}, your total score is {}", pvec[i].name.trim(), pvec[i].score);
                     pvec[i].turn_count += 1;
@@ -201,13 +210,43 @@ fn main() {
         }
         
         // check if anyone has won
-        if pvec[i].score >= 100 {
+        if pvec[i].score >= 30 {
             println!("CONGRATS {}", pvec[i].name);
             println!("***YOU WIN***");
             println!("...but not so fast");
             println!("you won in {} turns, so every player who hasn't had {} turns gets to try one last time", pvec[i].turn_count, pvec[i].turn_count);
-        }
+            
+            let total_turns_minus_one = pvec[i].turn_count - 1;
+            let cloned_pvec = pvec.clone();
+            let final_round_players = last_turns(cloned_pvec, total_turns_minus_one);
 
+            // maybe a for loop isnt the right idea 
+            // how will i roll more than once?
+            for mut val in final_round_players {
+                println!("last chance {}, score {}", val.name.trim().bright_green().bold(), val.score.on_bright_green());
+                let roll1 = dice_roll();
+                let roll2 = dice_roll();
+                println!("You");
+                println!("rolled");
+                println!("...");
+                println!("{} + {}", roll1.black().on_bright_white(), roll2).bright_white().on_black();
+                if roll1 == 1 && roll2 == 1 {
+                    println!("wow {} you are very unlucky", val.name.trim().bold().bright_green());
+                } else if roll1 == 1 || roll2 == 1 {
+                    println!("better luck next time. thanks for playing {}", val.name.trim().bright_yellow().on_bright_purple());
+                } else if roll1 == roll2 {
+                    println!("fuck yeah lets fucking go thats good thats real good keep doing that");
+                    val.score += roll1*4;
+                    println!("your score is {}, {} points away!", val.score.yellow().bold(), pvec[i].score - val.score);
+                }
+                val.score += roll1 + roll2;
+                println!("your score is {}, {} points away!", val.score.yellow().bold(), pvec[i].score - val.score);
+
+            }
+            
+        }
+        
+        // use filter method to create vec of structs with given attribute
         // give only the remaining players the option to roll 1 last time
         // iter through slice of the vector
         // then see if anyone has gotten a higher score
@@ -224,177 +263,7 @@ fn main() {
     }
 
 
-// ye olde loopty loop
-// **GAME LOOP PAUSED FOR CONSTRUCTION***
-    // 'game: loop {
-    //     let mut p1_turn_score = 0;
-    //     let mut p2_turn_score = 0;
 
-    //     if p1.score >= 100 {
-    //     println!("Player 1 wins");
-    //     }
-
-    //     if p2.score < p1.score && p1.score >= 100 {
-    //         println!("p1 wins");
-    //         break 'game;
-    //     }
-
-        
-        
-    //     'turn1: loop {
-    //         println!("{}", "SCORE CHECK!!!".on_red());
-    //         println!("{} has {} points", p1.name.trim(), p1.score);
-    //         println!("{} has {} points", p2.name.trim(), p2.score);
-    //         println!("{}, {}", blue.paint(p1.name.to_ascii_uppercase().trim()), abyss.paint("it's your turn to roll"));
-    //         let roll1 = dice_roll();
-    //         let roll2: i32 = dice_roll();
-            
-    //         let mut virtual_dice_roll = String::new();
-    //         io::stdin()
-    //             .read_line(&mut virtual_dice_roll)
-    //             .expect("not sure what that was");
-    //         if virtual_dice_roll.contains("roll") {
-    //         println!("{} & {}", roll1.black().on_bright_white().blink_fast().bold(), roll2.black().on_white().blink().bold());
-    //         if roll1 == 1 && roll2 == 1 {
-    //             p1.score *= 0;
-    //             println!("snake eyes! your score is now {}", p1.score.on_red());
-    //             p1.turn_count += 1;
-    //             break 'turn1;
-    //         } else if roll1 ==1 || roll2 == 1 {
-    //             println!("0 points for this turn!");
-    //             println!("total score: {}", yllw.paint(p1.score));
-    //             p1.turn_count += 1;
-    //             break 'turn1;
-    //         } else if roll1 == roll2 {
-    //             println!(" double {}'s! good job", roll1);
-    //             println!("that counts for {} points", roll1*4);
-    //             p1_turn_score += (roll1)*4;
-    //         println!("p1 score for this turn: {} keep rolling? [y,n]", p1_turn_score);
-    //         let mut response = String::new();
-    //         io::stdin()
-    //             .read_line(&mut response)
-    //             .expect("can't read");
-    //         let binary = response.contains("y");
-    //         if binary == true {
-    //             continue 'turn1;
-    //         } else {
-    //             p1.score += p1_turn_score;
-    //             println!("p1 total score: {}", yllw.paint(p1.score));
-    //             if p1.score >= 100 {
-    //                 println!("YOU WIN!");
-    //                 println!("...but not so fast p2 gets one last chance");
-    //                 p1.turn_count += 1;
-    //                 break 'turn1;
-    //             }
-    //             p1.turn_count += 1;
-    //             break 'turn1;
-    //         }
-    //         }
-    //         p1_turn_score += roll1 + roll2;
-    //         println!("turn score: {} keep rolling? [y,n]", yllw.paint(p1_turn_score));
-    //         let mut response = String::new();
-    //         io::stdin()
-    //             .read_line(&mut response)
-    //             .expect("can't read");
-    //         let binary = response.contains("y");
-    //         if binary == true {
-    //             continue 'turn1;
-    //         } else {
-    //             p1.score += p1_turn_score;
-    //             println!("p1 total score: {}", yllw.paint(p1.score));
-    //             if p1.score >= 100 {
-    //                 println!("YOU WIN!");
-    //                 println!("...but not so fast p2 gets one last chance");
-    //                 p1.turn_count += 1;
-    //                 break 'turn1;
-    //             }
-    //             p1.turn_count += 1;
-    //             break 'turn1;
-    //         }
-    //     }
-    // }
-    //     'turn2: loop {
-    //         println!("{}, type 'roll' to roll", p2.name.trim());
-    //         let roll1 = dice_roll();
-    //         let roll2: i32 = dice_roll();
-
-    //         // check if roll is entered
-    //         let mut virtual_dice_roll = String::new();
-    //         io::stdin()
-    //             .read_line(&mut virtual_dice_roll)
-    //             .expect("not sure what that was");
-    //         if virtual_dice_roll.contains("roll") {
-    //         println!("{} rolled: {} & {}", p2.name.trim(), roll1, roll2);
-
-    //         // compare dice values to special cases
-    //         // snake eyes
-    //         if roll1 == 1 && roll2 == 1 {
-    //             p2.score *= 0;
-    //             println!("snake eyes! your total score is now {}", p2.score);
-    //             p2.turn_count += 1;
-    //             break 'turn2;
-    //         // roll a 1
-    //         } else if roll1 ==1 || roll2 == 1 {
-    //             println!("0 points for this turn!");
-    //             println!("{} is your total score", p2.score);
-    //             p2.turn_count += 1;
-    //             break 'turn2;
-    //         // roll doubles
-    //         } else if roll1 == roll2 {
-    //             println!(" double {}'s!", roll1);
-    //             println!("that counts for {} points", roll1*4);
-    //             p2_turn_score += (roll1)*4;
-
-    //         // tell player how many points they have
-    //         // ask if they want to continue
-    //         println!("p2 score for this turn: {} keep rolling? [y,n]", p2_turn_score);
-    //         let mut response = String::new();
-    //         io::stdin()
-    //             .read_line(&mut response)
-    //             .expect("can't read");
-    //         let binary = response.contains("y");
-    //         // if yes, continue loop
-    //         if binary == true {
-    //             continue 'turn2;
-    //         // if no, add turn score to total and end turn
-    //         } else {
-    //             p2.score += p2_turn_score;
-    //             println!("p2 total score: {}", p2.score);
-    //             // if they are at 100 they win
-    //             if p2.score >= 100 {
-    //                 println!("you win");
-    //                 break 'game;
-    //             }
-    //             break 'turn2;
-    //         }
-    //         }
-    //         p2_turn_score += roll1 + roll2;
-    //         println!("p2 score for this turn: {} keep rolling? [y,n]", p2_turn_score);
-    //         let mut response = String::new();
-    //         io::stdin()
-    //             .read_line(&mut response)
-    //             .expect("can't read");
-    //         let binary = response.contains("y");
-    //         if binary == true {
-    //             continue 'turn2;
-    //         } else {
-    //             p2.score += p2_turn_score;
-    //             println!("p2 total score: {}", p2.score);
-    //             if p2.score >= 100 && p2.score > p1.score {
-    //                 println!("you win");
-    //                 break 'game;
-    //             }
-    //             p2.turn_count += 1;
-    //             break 'turn2;
-    //         }
-    //     }
-    // }
-
-        
-
-        
-    // }
-    // end game loop
 }
 
   
