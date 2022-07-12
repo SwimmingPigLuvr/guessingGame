@@ -5,7 +5,6 @@ use rand::Rng;
 use owo_colors::OwoColorize;
 // use device_query::{DeviceQuery, DeviceState, MouseState, Keycode};
 
-
 // TO DO
 // create function to call the entire turn
 // call function for each player
@@ -22,20 +21,22 @@ fn main() {
 
     // rules
     println!("{}", ("**HOW TO PLAY**").blink_fast());
-    println!("2 players take turns rolling dice, racing to get a score of {},", ("100").black().on_yellow());
-    println!("each player may roll as many times as they want during their turn");
-    println!("however, if a 1 is rolled then that player gets no points for the entire turn,");
-    println!("if a player rolls Snake Eyes, then their total score goes to 0");
-    println!("if doubles are rolled, then those dice are doubled.");
-    println!("e.g: rolling 2 6's would score you 24 points");
-    println!("if player 1 rolls to 100 first, player 2 has 1 last chance to beat them");
-    println!("that way each player has an equal number of turns");
-    println!("if player 1 reaches 100 or higher, they may keep rolling to set a higher total");
-    println!("so if player 1 decides to stop at a score of 121,");
-    println!("player 2 would have to get to 121 or higher to win");
+    println!("2 players take turns rolling dice,");
+    println!("racing to get a score of {}.", ("100").black().on_yellow());
+    println!("On your turn you may roll as many times as you like.");
+    println!("*******but don't be Greedy!*******");
+    println!("If you roll a 1, your turn ends and you get 0 points.");
+    println!("If you roll Snake Eyes, your turn ends and your total score goes to 0!");
+    println!("Doubles are multiplied by 2!");
+    println!("e.g: rolling two 6's would score you 24 points");
+    println!("If you roll to 100 or higher on your fifth turn,");
+    println!("all players who have not had 5 turns get one last chance to beat your score.");
+    println!("all players who have not had 5 turns get one last chance to beat your score.");
+    println!("if you reach 100 or higher, you may keep rolling to set a higher total score");
+
     println!("{}", ("TYPE 'roll' TO ROLL").on_bright_blue());
 
-    println!("How many players will be playing?");
+    println!("{}", ("How many players will be playing?").bright_blue());
     
     
     
@@ -80,48 +81,150 @@ fn main() {
     random_prompts.push(String::from("YOUR TURN"));
     random_prompts.push(String::from("*picks up dice...shakes vigorously...rolls them across the table"));
     random_prompts.push(String::from("GOOD LUCK, HAVE FUN :)"));
-    random_prompts.push(String::from("whatever you do, DON'T ROLL SNAKE EYES"));
+    random_prompts.push(String::from("DON'T BE GREEDY"));
+    random_prompts.push(String::from("YOU CAN DO IT!!!"));
+    random_prompts.push(String::from("your family is counting on you"));
+    random_prompts.push(String::from("please roll"));
+    random_prompts.push(String::from("your turn to roll now"));
+    random_prompts.push(String::from("right now it is your turn to roll now"));
+    random_prompts.push(String::from("ROLL THE VIRTUAL DICE"));
+    random_prompts.push(String::from("fucking roll already"));
+    random_prompts.push(String::from("please roll, milady"));
 
-    fn gen_prompt_num() -> i32 {
+    let mut random_ones: Vec<String> = Vec::new();
+    random_ones.push(String::from("you rolled a 1! no points for this turn"));
+    random_ones.push(String::from("get good nerd"));
+    random_ones.push(String::from("no points scored because you rolled a 1"));
+    random_ones.push(String::from("get rekt"));
+    random_ones.push(String::from("HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA"));
+
+
+    
+
+    fn gen_prompt_num() -> usize {
         let mut prompt: ThreadRng = thread_rng();
-        let prompt_num: i32 = prompt.gen_range(1..8);
+        let prompt_num: usize = prompt.gen_range(0..13);
         prompt_num
     }
-    'game: loop {
 
-        // REMEMBER! vec indexes start from 0
-        // so the indexes are ***turn_scores[0] to turn_scores[p_num-1]***
-        // ex: player i's turn score is stored at turn_score[i-1]
-        let turn_scores: Vec<i32> = vec![0; p_num.try_into().unwrap()];
-        let mut i: usize = 1;
-        loop {
-            let mut rp_index: i32 = gen_prompt_num();
-            println!("{}: {}", pvec[i-1].name.trim(), random_prompts[5]);
+    fn gen_ro_prompt() -> usize {
+        let mut ro: ThreadRng = thread_rng();
+        let ro_num: usize = ro.gen_range(0..4);
+        ro_num
+    }
+
+    // since i only have 1 turn loop inside the game loop
+    // i have to make sure that the i value changes after a player's turn ends
+    let mut i: usize = 0;
+    loop {
+        
+        let mut turn_scores: Vec<i32> = vec![0; p_num.try_into().unwrap()];
+        
+        'turn: loop {
+            
+            let rp_index: usize = gen_prompt_num();
+            let ro_index: usize = gen_ro_prompt();
+            println!("{}: {}", pvec[i].name.trim(), random_prompts[rp_index]);
             let roll1 = dice_roll();
             let roll2 = dice_roll();
             let mut keyboard_roll = String::new();
             io::stdin().read_line(&mut keyboard_roll).expect("cant read that");
             if keyboard_roll.contains("roll") {
                 println!("{} & {}", roll1, roll2);
+
+                // rolling snake eyes
+                if roll1 == 1 && roll2 == 1 {
+                    println!("SNAKE EYES");
+                    pvec[i].score *= 0;
+                    println!("{}, your total score is {}", pvec[i].name.trim(), pvec[i].score);
+                    pvec[i].turn_count += 1;
+                    break 'turn;
+                
+                // rolling a 1
+                } else if roll1 == 1 || roll2 == 1 {
+                    println!("{}", random_ones[ro_index]);
+                    println!("{}, your total score is {}", pvec[i].name.trim(), pvec[i].score);
+                    pvec[i].turn_count += 1;
+                    break 'turn;
+
+                // rolling doubles
+                } else if roll1 == roll2 {
+                    println!("DOUBLES!!!");
+                    turn_scores[i] += roll1*4;
+                    println!("{}, your turn score is {}", pvec[i].name.trim(), turn_scores[i]);
+                    println!("ROLL AGAIN? [y,n]");
+
+                    // go again?
+                    let mut response = String::new();
+                    io::stdin()
+                        .read_line(&mut response)
+                        .expect("can't read");
+                    let binary = response.contains("y");
+
+                    // yes
+                    if binary == true {
+                        continue 'turn
+                    } 
+                    // no
+                    else {
+                        pvec[i].score += turn_scores[i];
+                        println!("{}, your total score is {}", pvec[i].name.trim(), pvec[i].score);
+                        pvec[i].turn_count += 1;
+                        break 'turn;
+                    }
+                } 
+                    // normal roll
+                    // go again?
+                    turn_scores[i] += roll1 + roll2;
+                    println!("{}, your turn score is {}", pvec[i].name.trim(), turn_scores[i]);
+                    println!("ROLL AGAIN? [y,n]");
+                    let mut response = String::new();
+                    io::stdin()
+                        .read_line(&mut response)
+                        .expect("can't read");
+                    let binary = response.contains("y");
+
+                    // yes
+                    if binary == true {
+                        continue 'turn
+                    } 
+                    // no
+                    else {
+                        pvec[i].score += turn_scores[i];
+                        println!("{}, your total score is {}", pvec[i].name.trim(), pvec[i].score);
+                        pvec[i].turn_count += 1;
+                        break 'turn;
+                    }
             }
             
-            if i >= p_num.try_into().unwrap() {
-                break 'game;
-            }
-            i += 1;
+            
         }
         
-        // turn scores stored here
-        // create vec for turn scores
+        // check if anyone has won
+        if pvec[i].score >= 100 {
+            println!("CONGRATS {}", pvec[i].name);
+            println!("***YOU WIN***");
+            println!("...but not so fast");
+            println!("you won in {} turns, so every player who hasn't had {} turns gets to try one last time", pvec[i].turn_count, pvec[i].turn_count);
+        }
 
-        // iterate through pvec 
-        // 'turn loop for each iteration of pvec
+        // give only the remaining players the option to roll 1 last time
+        // iter through slice of the vector
+        // then see if anyone has gotten a higher score
+        // break loop print winner
+        // reset turn loop back to player 1
+        let p_num_minus_one = p_num - 1;
+        if i == p_num_minus_one.try_into().unwrap() {
+            i *= 0
+        } else {
+            i += 1;
+        }
         
 
     }
 
 
-    
+// ye olde loopty loop
 // **GAME LOOP PAUSED FOR CONSTRUCTION***
     // 'game: loop {
     //     let mut p1_turn_score = 0;
