@@ -208,6 +208,7 @@ fn main() {
             
             
         }
+        // end of turn loop
         
         // check if anyone has won
 
@@ -220,12 +221,12 @@ fn main() {
             
             let total_turns_minus_one = pvec[i].turn_count - 1;
             let cloned_pvec = pvec.clone();
-            let final_round_players = last_turns(cloned_pvec, total_turns_minus_one);
+            let mut final_round_players = last_turns(cloned_pvec, total_turns_minus_one);
 
-            // maybe a for loop isnt the right idea 
-            // how will i roll more than once?
-            for mut val in final_round_players {
-                println!("last chance {}, score {}", val.name.trim().bright_green().bold(), val.score.on_bright_green());
+            let mut v: usize = 0;
+            loop {
+            'final_turn: loop {
+                println!("last chance {}, score {}", final_round_players[v].name.trim().bright_green().bold(), final_round_players[v].score.on_bright_green());
                 let roll1 = dice_roll();
                 let roll2 = dice_roll();
                 println!("You");
@@ -233,20 +234,36 @@ fn main() {
                 println!("...");
                 println!("{} + {}", roll1.black().on_bright_white(), roll2).bright_white().on_black();
                 if roll1 == 1 && roll2 == 1 {
-                    println!("wow {} you are very unlucky", val.name.trim().bold().bright_green());
+                    println!("wow {} you are very unlucky", final_round_players[v].name.trim().bold().bright_green());
+                    break 'final_turn
                 } else if roll1 == 1 || roll2 == 1 {
-                    println!("better luck next time. thanks for playing {}", val.name.trim().bright_yellow().on_bright_purple());
+                    println!("better luck next time. thanks for playing {}", final_round_players[v].name.trim().bright_yellow().on_bright_purple());
+                    break 'final_turn
                 } else if roll1 == roll2 {
                     println!("fuck yeah lets fucking go thats good thats real good keep doing that");
-                    val.score += roll1*4;
-                    println!("your score is {}, {} points away!", val.score.yellow().bold(), pvec[i].score - val.score);
+                    final_round_players[v].score += roll1*4;
+                    println!("your score is {}, {} points away!", final_round_players[v].score.yellow().bold(), pvec[i].score - final_round_players[v].score);
                 }
-                val.score += roll1 + roll2;
-                println!("your score is {}, {} points away!", val.score.yellow().bold(), pvec[i].score - val.score);
-
+                final_round_players[v].score += roll1 + roll2;
+                println!("your score is {}, {} points away!", final_round_players[v].score.yellow().bold(), pvec[i].score - final_round_players[v].score);
             }
-            
+            // end final turn loop
+
+            if final_round_players[v].score > pvec[i].score {
+                println!("{} you have surpassed {}'s score", final_round_players[v].name.trim().bold().on_cyan(), pvec[i].name.trim().bold().on_bright_magenta());
+            }
+
+                if v == final_round_players.len() - 1 {
+                    i *= 0
+                } else {
+                    v +=1;
+                }
+            } 
+            // end final game loop
+
+
         }
+        // end turn loop
         
         // use filter method to create vec of structs with given attribute
         // give only the remaining players the option to roll 1 last time
@@ -263,6 +280,7 @@ fn main() {
         
 
     }
+    // end game loop
 
 
 
