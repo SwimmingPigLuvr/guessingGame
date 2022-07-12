@@ -210,6 +210,8 @@ fn main() {
         }
         
         // check if anyone has won
+
+        // temp changed to 30 so i can test the end game in terminal
         if pvec[i].score >= 30 {
             println!("CONGRATS {}", pvec[i].name);
             println!("***YOU WIN***");
